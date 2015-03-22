@@ -15,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +31,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amazon.device.ads.Ad;
 import com.amazon.device.ads.AdError;
@@ -141,8 +139,22 @@ public class MainActivity extends ActionBarActivity implements AdListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		pref = getSharedPreferences("pref", Context.MODE_WORLD_READABLE);
+
 		lv = (ListView) findViewById(R.id.appList);
 		masterSwitch = (Switch) findViewById(R.id.masterswitch);
+		masterSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				Editor editor = pref.edit();
+				editor.putBoolean("master", isChecked);
+				editor.apply();
+			}
+
+		});
+		masterSwitch.setChecked(pref.getBoolean("master", true));
 
 		final ProgressDialog dialog = new ProgressDialog(this);
 		dialog.setTitle("Loading apps...");
@@ -166,8 +178,6 @@ public class MainActivity extends ActionBarActivity implements AdListener {
 
 		});
 		load.start();
-
-		pref = getSharedPreferences("pref", Context.MODE_WORLD_READABLE);
 
 		AdRegistration.setAppKey("8795e9c21c3b4edaa265c5c8cacfc43f");
 		AdLayout adView = (AdLayout) findViewById(R.id.ad);
@@ -209,23 +219,16 @@ public class MainActivity extends ActionBarActivity implements AdListener {
 		return res;
 	}
 
-	public void save(View v) {
-		Editor editor = pref.edit();
-		int i = 0;
-		while (i < adapter.data.size()) {
-			String pname = adapter.data.get(i).pname;
-			editor.putBoolean(pname, lv.isItemChecked(i));
-			Log.d("FE",
-					"package " + pname + ", value: "
-							+ Boolean.toString(lv.isItemChecked(i)));
-			i++;
-		}
-		editor.putBoolean("master", masterSwitch.isChecked());
-		editor.apply();
-		Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();
-		;
-		finish();
-	}
+	/*
+	 * public void save(View v) {
+	 * 
+	 * int i = 0; while (i < adapter.data.size()) { String pname =
+	 * adapter.data.get(i).pname; editor.putBoolean(pname, lv.isItemChecked(i));
+	 * Log.d("FE", "package " + pname + ", value: " +
+	 * Boolean.toString(lv.isItemChecked(i))); i++; }
+	 * 
+	 * Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show(); ; finish(); }
+	 */
 
 	public void invert(View v) {
 		int i = 0;

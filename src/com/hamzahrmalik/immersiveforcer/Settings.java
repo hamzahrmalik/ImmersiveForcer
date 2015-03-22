@@ -1,6 +1,5 @@
 package com.hamzahrmalik.immersiveforcer;
 
-
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
